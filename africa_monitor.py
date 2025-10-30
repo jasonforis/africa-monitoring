@@ -6,11 +6,11 @@
 import asyncio
 import httpx
 import json
-import math
 import os
 import logging
 from datetime import datetime
 from typing import List, Dict, Optional
+from urllib.parse import quote
 
 # Настройка логирования
 logging.basicConfig(
@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 # API endpoints
 API_URL = "https://beta.index.ru/mf-api/"
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # Выходная директория
 OUTPUT_DIR = "/tmp/africa_data"
@@ -54,6 +53,44 @@ async def fetch_page_with_retry(client: httpx.AsyncClient, page_num: int = None,
             await asyncio.sleep(2)
     
     return None
+
+
+async def fetch_country_news(client: httpx.AsyncClient, country_name: str, max_retries: int = 3) -> List[Dict]:
+    """
+    Получает новости по стране через поисковый API
+    
+    Args:
+        client: HTTP клиент
+        country_name: Название страны
+        max_retries: Количество повторных попыток
+    
+    Returns:
+        Список новостей
+    """
+    params = {"q": country_name}
+    
+    for attempt in range(max_retries):
+        try:
+            response = await client.get(API_URL, params=params, timeout=30.0)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list) and len(data) > 0:
+                    # Возвращаем headlines из первого результата
+                    headlines = data[0].get("headlines", [])
+                    logger.info(f"  ✓ Получено {len(headlines)} новостей по {country_name}")
+                    return headlines
+            
+            logger.warning(f"  Попытка {attempt + 1}/{max_retries}: статус {response.status_code}")
+            
+        except Exception as e:
+            logger.warning(f"  Попытка {attempt + 1}/{max_retries}: {str(e)[:100]}")
+            
+        # Ждём перед следующей попыткой
+        if attempt < max_retries - 1:
+            await asyncio.sleep(2)
+    
+    return []
 
 
 async def fetch_all_african_countries() -> List[Dict]:
@@ -105,20 +142,19 @@ async def fetch_all_african_countries() -> List[Dict]:
         return all_countries if all_countries else []
 
 
-async def generate_country_overview(country_name: str, headlines: List[Dict], mentions: int) -> Dict:
+def generate_country_overview_from_news(country_name: str, headlines: List[Dict]) -> Dict:
     """
-    Генерирует AI-обзор для страны
+    Генерирует обзор для страны на основе новостей из API
     
     Args:
         country_name: Название страны
-        headlines: Список новостей
-        mentions: Количество упоминаний
+        headlines: Список новостей из API
     
     Returns:
         Dict с полями:
-            - title: Заголовок обзора
-            - summary: Краткая сводка
-            - full_text: Полный текст обзора
+            - title: Заголовок обзора (первая новость)
+            - summary: Краткая сводка (первые 3 новости)
+            - full_text: Полный текст (все новости)
     """
     try:
         if not headlines or len(headlines) == 0:
@@ -128,77 +164,35 @@ async def generate_country_overview(country_name: str, headlines: List[Dict], me
                 "full_text": "Информация обновляется..."
             }
         
-        # Берём первые 3 новости для анализа
-        news_texts = []
+        # Заголовок - первая новость
+        first_news = headlines[0]
+        title = first_news.get('msg', f"{country_name}: Нет заголовка")[:100]
+        
+        # Краткая сводка - первые 3 новости
+        summary_parts = []
         for news in headlines[:3]:
-            source = news.get('source', '')
+            msg = news.get('msg', '')
+            if msg:
+                summary_parts.append(msg[:200])
+        summary = " • ".join(summary_parts) if summary_parts else "Информация обновляется..."
+        
+        # Полный текст - все новости
+        full_text_parts = []
+        for i, news in enumerate(headlines[:10], 1):  # Берём первые 10 новостей
+            source = news.get('source', 'Источник неизвестен')
             time = news.get('time', '')
-            snippet = news.get('msg', '')
-            news_texts.append(f"[{source}, {time}] {snippet[:500]}")
+            msg = news.get('msg', '')
+            
+            if msg:
+                full_text_parts.append(f"{i}. [{source}] {msg}")
         
-        news_context = "\n\n".join(news_texts)
+        full_text = "\n\n".join(full_text_parts) if full_text_parts else "Информация обновляется..."
         
-        prompt = f"""Ты - новостной аналитик. На основе новостей напиши обзор по стране {country_name}.
-
-Новости:
-{news_context}
-
-Требования:
-1. Создай короткий заголовок (5-7 слов) - главное событие в стране
-2. Напиши краткую сводку (2-3 предложения) - что происходит
-3. Напиши полный обзор (3-4 абзаца):
-   - Что происходит (главное событие)
-   - Контекст и детали
-   - Значение для региона/мира
-
-Стиль:
-- КОНКРЕТНЫЕ факты: кто, что, где, когда
-- Избегай общих фраз
-- Пиши информативно и лаконично
-
-Формат ответа (строго JSON):
-{{
-  "title": "Заголовок обзора",
-  "summary": "Краткая сводка в 2-3 предложения.",
-  "full_text": "Полный обзор в 3-4 абзаца."
-}}
-
-Ответ (только JSON):"""
-
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "google/gemini-2.0-flash-exp:free",
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 1000,
-                    "temperature": 0.7
-                }
-            )
-            
-            if response.status_code != 200:
-                logger.error(f"OpenRouter вернул статус {response.status_code}")
-                return {
-                    "title": f"{country_name}: Информация обновляется",
-                    "summary": "Информация обновляется...",
-                    "full_text": "Информация обновляется..."
-                }
-            
-            result = response.json()
-            ai_response = result["choices"][0]["message"]["content"].strip()
-            
-            # Извлекаем JSON из ответа
-            if "```json" in ai_response:
-                ai_response = ai_response.split("```json")[1].split("```")[0].strip()
-            elif "```" in ai_response:
-                ai_response = ai_response.split("```")[1].split("```")[0].strip()
-            
-            overview = json.loads(ai_response)
-            return overview
+        return {
+            "title": title,
+            "summary": summary,
+            "full_text": full_text
+        }
                 
     except Exception as e:
         logger.error(f"Ошибка при генерации обзора для {country_name}: {e}")
@@ -229,33 +223,37 @@ async def generate_africa_monitoring():
     
     logger.info(f"Получено {len(countries_data)} стран")
     
-    # Шаг 2: Генерируем обзоры для каждой страны
+    # Шаг 2: Получаем новости и генерируем обзоры для каждой страны
     countries_with_overviews = []
     
-    for i, country in enumerate(countries_data, 1):
-        country_name = country.get("category_name", "")
-        mentions = country.get("mentions_count", 0)
-        growth = country.get("growth_percentage", 0)
-        headlines = country.get("headlines", [])
-        image_url = country.get("category_image_url", "")
-        
-        # Конвертируем mentions в int
-        mentions = int(mentions) if mentions else 0
-        
-        logger.info(f"[{i}/{len(countries_data)}] Генерация обзора для: {country_name} ({mentions} упоминаний)")
-        
-        overview = await generate_country_overview(country_name, headlines, mentions)
-        
-        countries_with_overviews.append({
-            "country_name": country_name,
-            "mentions_count": mentions,
-            "growth_percentage": growth,
-            "image_url": image_url,
-            "title": overview["title"],
-            "summary": overview["summary"],
-            "full_text": overview["full_text"],
-            "headlines": headlines
-        })
+    async with httpx.AsyncClient() as client:
+        for i, country in enumerate(countries_data, 1):
+            country_name = country.get("category_name", "")
+            mentions = country.get("mentions_count", 0)
+            growth = country.get("growth_percentage", 0)
+            image_url = country.get("category_image_url", "")
+            
+            # Конвертируем mentions в int
+            mentions = int(mentions) if mentions else 0
+            
+            logger.info(f"[{i}/{len(countries_data)}] Обработка: {country_name} ({mentions} упоминаний)")
+            
+            # Получаем новости по стране через поисковый API
+            headlines = await fetch_country_news(client, country_name)
+            
+            # Генерируем обзор на основе новостей
+            overview = generate_country_overview_from_news(country_name, headlines)
+            
+            countries_with_overviews.append({
+                "country_name": country_name,
+                "mentions_count": mentions,
+                "growth_percentage": growth,
+                "image_url": image_url,
+                "title": overview["title"],
+                "summary": overview["summary"],
+                "full_text": overview["full_text"],
+                "headlines": headlines[:10]  # Сохраняем первые 10 новостей
+            })
     
     # Сортируем по количеству упоминаний
     countries_with_overviews.sort(key=lambda x: x["mentions_count"], reverse=True)
@@ -264,6 +262,7 @@ async def generate_africa_monitoring():
     output_data = {
         "generated_at": datetime.now().isoformat(),
         "total_countries": len(countries_with_overviews),
+        "total_mentions": sum(c["mentions_count"] for c in countries_with_overviews),
         "countries": countries_with_overviews
     }
     
@@ -273,6 +272,7 @@ async def generate_africa_monitoring():
     
     logger.info(f"✓ Сохранено в {output_file}")
     logger.info(f"  Всего стран: {len(countries_with_overviews)}")
+    logger.info(f"  Всего упоминаний: {output_data['total_mentions']}")
     logger.info(f"  Топ-3:")
     for i, country in enumerate(countries_with_overviews[:3], 1):
         logger.info(f"    {i}. {country['country_name']}: {country['mentions_count']} упоминаний")

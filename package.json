@@ -4,7 +4,7 @@
   "description": "Africa news monitoring dashboard with AI-generated summaries",
   "main": "africa-server.js",
   "scripts": {
-    "start": "node africa-server.js",
+    "start": "node test-server.js",
     "update": "python3 africa_monitor.py"
   },
   "keywords": ["africa", "news", "monitoring", "dashboard"],

@@ -1,0 +1,17 @@
+{
+  "name": "africa-monitoring",
+  "version": "1.0.0",
+  "description": "Africa news monitoring dashboard with AI-generated summaries",
+  "main": "africa-server.js",
+  "scripts": {
+    "start": "node africa-server.js",
+    "update": "python3 africa_monitor.py"
+  },
+  "keywords": ["africa", "news", "monitoring", "dashboard"],
+  "author": "Konstantin Rykov",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

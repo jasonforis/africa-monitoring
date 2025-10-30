@@ -15,164 +15,136 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
             color: white;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: 2.2em;
+            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .subtitle {
-            font-size: 1.2em;
+            font-size: 1em;
             opacity: 0.9;
         }
 
         .update-time {
-            margin-top: 10px;
-            font-size: 0.9em;
+            margin-top: 5px;
+            font-size: 0.85em;
             opacity: 0.8;
         }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px 30px;
+            border-radius: 10px;
+            padding: 10px 20px;
             color: white;
             text-align: center;
         }
 
         .stat-number {
-            font-size: 2.5em;
+            font-size: 1.8em;
             font-weight: bold;
             display: block;
         }
 
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.8em;
             opacity: 0.9;
-            margin-top: 5px;
+            margin-top: 3px;
         }
 
         .countries-list {
-            max-width: 900px;
-            margin: 0 auto 40px;
+            max-width: 100%;
+            margin: 0 auto 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 8px;
         }
 
         .country-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            padding: 12px 15px;
+            gap: 12px;
         }
 
         .country-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+            transform: translateX(3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .country-header {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        .country-rank {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            gap: 15px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            min-width: 40px;
+            text-align: center;
+            flex-shrink: 0;
         }
 
         .country-flag {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 2.5em;
             flex-shrink: 0;
+            line-height: 1;
         }
 
         .country-info {
             flex: 1;
+            min-width: 0;
         }
 
         .country-name {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .country-stats {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .country-rank {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .country-content {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .overview-title {
             font-size: 1.1em;
             font-weight: bold;
             color: #333;
-            margin-bottom: 10px;
-            line-height: 1.4;
+            margin-bottom: 3px;
         }
 
-        .overview-summary {
+        .country-stats {
+            font-size: 0.85em;
             color: #666;
-            line-height: 1.6;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .overview-title {
             font-size: 0.95em;
-        }
-
-        .read-more {
-            color: #667eea;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: gap 0.3s ease;
-        }
-
-        .read-more:hover {
-            gap: 10px;
+            color: #444;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* Modal styles */
@@ -203,20 +175,16 @@
         .modal-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px 20px 0 0;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .modal-flag {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 3em;
+            line-height: 1;
         }
 
         .modal-title {
@@ -224,8 +192,8 @@
         }
 
         .modal-country-name {
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 1.8em;
+            margin-bottom: 8px;
         }
 
         .modal-stats {
@@ -246,57 +214,52 @@
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 25px;
         }
 
         .modal-overview-title {
-            font-size: 1.5em;
+            font-size: 1.4em;
             font-weight: bold;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             line-height: 1.4;
         }
 
         .modal-overview-text {
             color: #444;
             line-height: 1.8;
-            font-size: 1.1em;
+            font-size: 1.05em;
             white-space: pre-line;
         }
 
         .loading {
             text-align: center;
-            padding: 50px;
+            padding: 30px;
             color: white;
-            font-size: 1.5em;
+            font-size: 1.2em;
         }
 
         .error {
             background: rgba(255, 0, 0, 0.1);
             border: 2px solid rgba(255, 0, 0, 0.3);
             color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 2em;
+                font-size: 1.8em;
             }
 
-            .countries-list {
-                padding: 0 10px;
-            }
-
-            .country-header {
-                padding: 15px;
+            .country-card {
+                padding: 10px 12px;
             }
 
             .country-flag {
-                width: 50px;
-                height: 50px;
+                font-size: 2em;
             }
 
             .modal-content {
@@ -340,7 +303,7 @@
     <div id="countryModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <img id="modalFlag" class="modal-flag" src="" alt="Flag">
+                <div class="modal-flag" id="modalFlag"></div>
                 <div class="modal-title">
                     <div class="modal-country-name" id="modalCountryName"></div>
                     <div class="modal-stats" id="modalStats"></div>
@@ -356,6 +319,69 @@
 
     <script>
         let countriesData = [];
+
+        // Country name to emoji mapping
+        const countryEmojis = {
+            'Алжир': '🇩🇿',
+            'ЮАР': '🇿🇦',
+            'Египет': '🇪🇬',
+            'Нигерия': '🇳🇬',
+            'Кения': '🇰🇪',
+            'Эфиопия': '🇪🇹',
+            'Марокко': '🇲🇦',
+            'Танзания': '🇹🇿',
+            'Гана': '🇬🇭',
+            'Сенегал': '🇸🇳',
+            'Тунис': '🇹🇳',
+            'Ангола': '🇦🇴',
+            'Камерун': '🇨🇲',
+            'Кот-д\'Ивуар': '🇨🇮',
+            'Уганда': '🇺🇬',
+            'Зимбабве': '🇿🇼',
+            'Судан': '🇸🇩',
+            'Мали': '🇲🇱',
+            'Замбия': '🇿🇲',
+            'Мозамбик': '🇲🇿',
+            'Ботсвана': '🇧🇼',
+            'Намибия': '🇳🇦',
+            'Мавритания': '🇲🇷',
+            'Габон': '🇬🇦',
+            'Лесото': '🇱🇸',
+            'Гамбия': '🇬🇲',
+            'Гвинея-Бисау': '🇬🇼',
+            'Гвинея': '🇬🇳',
+            'Экваториальная Гвинея': '🇬🇶',
+            'Маврикий': '🇲🇺',
+            'Эсватини': '🇸🇿',
+            'Джибути': '🇩🇯',
+            'Реюньон': '🇷🇪',
+            'Коморы': '🇰🇲',
+            'Кабо-Верде': '🇨🇻',
+            'Майотта': '🇾🇹',
+            'Сан-Томе и Принсипи': '🇸🇹',
+            'Сейшелы': '🇸🇨',
+            'Либерия': '🇱🇷',
+            'Сьерра-Леоне': '🇸🇱',
+            'Того': '🇹🇬',
+            'Бурунди': '🇧🇮',
+            'Южный Судан': '🇸🇸',
+            'Руанда': '🇷🇼',
+            'Центральноафриканская Республика': '🇨🇫',
+            'Эритрея': '🇪🇷',
+            'Чад': '🇹🇩',
+            'Нигер': '🇳🇪',
+            'Буркина-Фасо': '🇧🇫',
+            'Мадагаскар': '🇲🇬',
+            'Конго': '🇨🇬',
+            'ДР Конго': '🇨🇩',
+            'Малави': '🇲🇼',
+            'Бенин': '🇧🇯',
+            'Сомали': '🇸🇴'
+        };
+
+        function getCountryEmoji(countryName) {
+            return countryEmojis[countryName] || '🏴';
+        }
 
         // Load data
         async function loadData() {
@@ -381,9 +407,7 @@
                 // Render countries
                 renderCountries();
                 
-                // Hide loading
                 document.getElementById('loadingMessage').style.display = 'none';
-                
             } catch (error) {
                 console.error('Error loading data:', error);
                 document.getElementById('loadingMessage').style.display = 'none';
@@ -391,59 +415,66 @@
             }
         }
 
-        // Render countries list
         function renderCountries() {
-            const list = document.getElementById('countriesList');
-            list.innerHTML = '';
+            const container = document.getElementById('countriesList');
+            container.innerHTML = '';
             
             countriesData.forEach((country, index) => {
                 const card = document.createElement('div');
                 card.className = 'country-card';
                 card.onclick = () => openModal(country);
                 
+                const growthSign = country.growth_percentage >= 0 ? '↑' : '↓';
+                const growthColor = country.growth_percentage >= 0 ? '#10b981' : '#ef4444';
+                
                 card.innerHTML = `
-                    <div class="country-header">
-                        <img class="country-flag" src="${country.image_url}" alt="${country.country_name}" onerror="this.src='https://via.placeholder.com/60'">
-                        <div class="country-info">
-                            <div class="country-name">${country.country_name}</div>
-                            <div class="country-stats">
-                                ↑${country.mentions_count.toLocaleString()} упоминаний
-                                ${country.growth_percentage > 0 ? ` • +${country.growth_percentage.toFixed(1)}%` : ''}
-                            </div>
+                    <div class="country-rank">#${index + 1}</div>
+                    <div class="country-flag">${getCountryEmoji(country.country_name)}</div>
+                    <div class="country-info">
+                        <div class="country-name">${country.country_name}</div>
+                        <div class="country-stats">
+                            <span style="color: ${growthColor}; font-weight: bold;">
+                                ${growthSign}${country.mentions_count} упоминаний
+                            </span>
+                            • 
+                            <span style="color: ${growthColor};">
+                                ${country.growth_percentage >= 0 ? '+' : ''}${country.growth_percentage.toFixed(1)}%
+                            </span>
                         </div>
-                        <div class="country-rank">#${index + 1}</div>
-                    </div>
-                    <div class="country-content">
-                        <div class="overview-title">${country.title}</div>
-                        <div class="overview-summary">${country.summary}</div>
-                        <a class="read-more">Читать полностью →</a>
+                        <div class="overview-title">${country.overview_title}</div>
                     </div>
                 `;
                 
-                list.appendChild(card);
+                container.appendChild(card);
             });
         }
 
-        // Modal functionality
-        const modal = document.getElementById('countryModal');
-        const closeBtn = document.querySelector('.close');
-
         function openModal(country) {
-            document.getElementById('modalFlag').src = country.image_url;
+            const modal = document.getElementById('countryModal');
+            const growthSign = country.growth_percentage >= 0 ? '↑' : '↓';
+            const growthColor = country.growth_percentage >= 0 ? '#10b981' : '#ef4444';
+            
+            document.getElementById('modalFlag').textContent = getCountryEmoji(country.country_name);
             document.getElementById('modalCountryName').textContent = country.country_name;
-            document.getElementById('modalStats').textContent = 
-                `↑${country.mentions_count.toLocaleString()} упоминаний • +${country.growth_percentage.toFixed(1)}% рост`;
-            document.getElementById('modalOverviewTitle').textContent = country.title;
-            document.getElementById('modalOverviewText').textContent = country.full_text;
+            document.getElementById('modalStats').innerHTML = `
+                <span style="color: rgba(255,255,255,0.9);">
+                    ${growthSign}${country.mentions_count} упоминаний • 
+                    ${country.growth_percentage >= 0 ? '+' : ''}${country.growth_percentage.toFixed(1)}%
+                </span>
+            `;
+            document.getElementById('modalOverviewTitle').textContent = country.overview_title;
+            document.getElementById('modalOverviewText').textContent = country.overview;
             
             modal.style.display = 'block';
         }
 
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
+        // Modal close
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('countryModal').style.display = 'none';
         }
 
         window.onclick = function(event) {
+            const modal = document.getElementById('countryModal');
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
@@ -451,9 +482,6 @@
 
         // Load data on page load
         loadData();
-
-        // Auto-refresh every hour
-        setInterval(loadData, 60 * 60 * 1000);
     </script>
 </body>
 </html>
